@@ -1,5 +1,6 @@
 function getVersionsMenuItems() {
   return [
-    { name: 'main', url: '/nri-resource-policy/main' },
+    { name: 'devel', url: '/nri-plugins/devel' },
+    { name: 'main', url: '/nri-plugins/main' },
   ];
 }
