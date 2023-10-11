@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Installation &mdash; NRI Plugins 0.0.0-310-gc587af4 documentation</title>
+  <title>Installation &mdash; NRI Plugins 0.0.0-349-g417c4ac documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -68,6 +68,7 @@
 <li class="toctree-l2"><a class="reference internal" href="developers-guide/index.html">Developer’s Guide</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../memory/index.html">Memory plugins</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/containers/nri-plugins">Project GitHub repository</a></li>
 </ul>
@@ -112,21 +113,37 @@ here can be applied to any other plugin hosted in this repository, regardless of
 following components: DaemonSet, ConfigMap, CustomResourceDefinition, and RBAC-related objects.</p>
 <section id="prerequisites">
 <h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading"></a></h2>
-<ul class="simple">
+<ul>
 <li><p>Container runtime:</p>
 <ul>
 <li><p>containerD:</p>
 <ul>
 <li><p>At least <a class="reference external" href="https://github.com/containerd/containerd/releases/tag/v1.7.0">containerd 1.7.0</a>
-release version to use the NRI feature</p></li>
-<li><p>Enable NRI feature by following [these](TODO link) detailed instructions.</p></li>
+release version to use the NRI feature.</p></li>
+<li><p>Enable NRI feature by following <a class="reference external" href="https://github.com/containerd/containerd/blob/main/docs/NRI.md#enabling-nri-support-in-containerd">these</a>
+detailed instructions. You can optionally enable the NRI in containerd using the Helm chart
+during the chart installation simply by setting the <code class="docutils literal notranslate"><span class="pre">nri.patchRuntimeConfig</span></code> parameter.
+For instance,</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>helm<span class="w"> </span>install<span class="w"> </span>topology-aware<span class="w"> </span>--namespace<span class="w"> </span>kube-system<span class="w"> </span>--set<span class="w"> </span>nri.patchRuntimeConfig<span class="o">=</span><span class="nb">true</span><span class="w"> </span>deployment/helm/topology-aware/
+</pre></div>
+</div>
+<p>Enabling <code class="docutils literal notranslate"><span class="pre">nri.patchRuntimeConfig</span></code> creates an init container to turn on
+NRI feature in containerd and only after that proceed the plugin installation.</p>
+</li>
 </ul>
 </li>
 <li><p>CRI-O</p>
 <ul>
 <li><p>At least <a class="reference external" href="https://github.com/cri-o/cri-o/releases/tag/v1.26.0">v1.26.0</a> release version to
 use the NRI feature</p></li>
-<li><p>Enable NRI feature by following [these](TODO link) detailed instructions.</p></li>
+<li><p>Enable NRI feature by following <a class="reference external" href="https://github.com/cri-o/cri-o/blob/main/docs/crio.conf.5.md#crionri-table">these</a> detailed instructions.
+You can optionally enable the NRI in CRI-O using the Helm chart
+during the chart installation simply by setting the <code class="docutils literal notranslate"><span class="pre">nri.patchRuntimeConfig</span></code> parameter.
+For instance,</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>helm<span class="w"> </span>install<span class="w"> </span>topology-aware<span class="w"> </span>--namespace<span class="w"> </span>kube-system<span class="w"> </span>--set<span class="w"> </span>nri.patchRuntimeConfig<span class="o">=</span><span class="nb">true</span><span class="w"> </span>deployment/helm/topology-aware/
+</pre></div>
+</div>
+</li>
 </ul>
 </li>
 </ul>
@@ -157,7 +174,7 @@ available parameters that can be modified before installation. It’s important
 to note that specifying the namespace (using <code class="docutils literal notranslate"><span class="pre">--namespace</span></code>) is crucial when
 installing the Helm chart. If no namespace is specified, the manifests will
 be installed in the default namespace.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>helm<span class="w"> </span>install<span class="w"> </span>topology-aware<span class="w"> </span>--namespace<span class="w"> </span>kube-system<span class="w"> </span>deployment/helm/resource-management-policies/topology-aware/
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>helm<span class="w"> </span>install<span class="w"> </span>topology-aware<span class="w"> </span>--namespace<span class="w"> </span>kube-system<span class="w"> </span>deployment/helm/topology-aware/
 </pre></div>
 </div>
 </li>
@@ -230,9 +247,9 @@ along with the default values, for the Topology-aware and Balloons plugins Helm 
 <td>plugin configuration data</td>
 </tr>
 <tr>
-<td><code>nri.patchContainerdConfig</code></td>
+<td><code>nri.patchRuntimeConfig</code></td>
 <td>false</td>
-<td>enable/disable NRI in containerd.</td>
+<td>enable NRI in containerd or CRI-O</td>
 </tr>
 <tr>
 <td><code>initImage.name</code></td>
@@ -299,9 +316,132 @@ along with the default values, for the Topology-aware and Balloons plugins Helm 
 <td>plugin configuration data</td>
 </tr>
 <tr>
-<td><code>nri.patchContainerdConfig</code></td>
+<td><code>nri.patchRuntimeConfig</code></td>
 <td>false</td>
-<td>enable/disable NRI in containerd.</td>
+<td>enable NRI in containerd or CRI-O</td>
+</tr>
+<tr>
+<td><code>initImage.name</code></td>
+<td><a href="ghcr.io/containers/nri-plugins/config-manager">ghcr.io/containers/nri-plugins/config-manager</a></td>
+<td>init container image name</td>
+</tr>
+<tr>
+<td><code>initImage.tag</code></td>
+<td>unstable</td>
+<td>init container image tag</td>
+</tr>
+<tr>
+<td><code>initImage.pullPolicy</code></td>
+<td>Always</td>
+<td>init container image pull policy</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="memtierd">
+<h4>Memtierd<a class="headerlink" href="#memtierd" title="Permalink to this heading"></a></h4>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Name</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>image.name</code></td>
+<td><a href="ghcr.io/containers/nri-plugins/nri-memtierd">ghcr.io/containers/nri-plugins/nri-memtierd</a></td>
+<td>container image name</td>
+</tr>
+<tr>
+<td><code>image.tag</code></td>
+<td>unstable</td>
+<td>container image tag</td>
+</tr>
+<tr>
+<td><code>image.pullPolicy</code></td>
+<td>Always</td>
+<td>image pull policy</td>
+</tr>
+<tr>
+<td><code>resources.cpu</code></td>
+<td>250m</td>
+<td>cpu resources for the Pod</td>
+</tr>
+<tr>
+<td><code>resources.memory</code></td>
+<td>100Mi</td>
+<td>memory qouta for the</td>
+</tr>
+<tr>
+<td><code>outputDir</code></td>
+<td>empty string</td>
+<td>host directory for memtierd.output files</td>
+</tr>
+<tr>
+<td><code>nri.patchRuntimeConfig</code></td>
+<td>false</td>
+<td>enable NRI in containerd or CRI-O</td>
+</tr>
+<tr>
+<td><code>initImage.name</code></td>
+<td><a href="ghcr.io/containers/nri-plugins/config-manager">ghcr.io/containers/nri-plugins/config-manager</a></td>
+<td>init container image name</td>
+</tr>
+<tr>
+<td><code>initImage.tag</code></td>
+<td>unstable</td>
+<td>init container image tag</td>
+</tr>
+<tr>
+<td><code>initImage.pullPolicy</code></td>
+<td>Always</td>
+<td>init container image pull policy</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="memory-qos">
+<h4>Memory-qos<a class="headerlink" href="#memory-qos" title="Permalink to this heading"></a></h4>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Name</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>image.name</code></td>
+<td><a href="ghcr.io/containers/nri-plugins/nri-memory-qos">ghcr.io/containers/nri-plugins/nri-memory-qos</a></td>
+<td>container image name</td>
+</tr>
+<tr>
+<td><code>image.tag</code></td>
+<td>unstable</td>
+<td>container image tag</td>
+</tr>
+<tr>
+<td><code>image.pullPolicy</code></td>
+<td>Always</td>
+<td>image pull policy</td>
+</tr>
+<tr>
+<td><code>resources.cpu</code></td>
+<td>10m</td>
+<td>cpu resources for the Pod</td>
+</tr>
+<tr>
+<td><code>resources.memory</code></td>
+<td>100Mi</td>
+<td>memory qouta for the</td>
+</tr>
+<tr>
+<td><code>nri.patchRuntimeConfig</code></td>
+<td>false</td>
+<td>enable NRI in containerd or CRI-O</td>
 </tr>
 <tr>
 <td><code>initImage.name</code></td>
