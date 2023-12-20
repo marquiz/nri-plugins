@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Balloons Policy &mdash; NRI Plugins v0.0.0-397-gf674060 documentation</title>
+  <title>Balloons Policy &mdash; NRI Plugins v0.0.0-482-g2ba5874 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -20,7 +20,7 @@
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Developer’s Guide" href="../developers-guide/index.html" />
+    <link rel="next" title="Template Policy" href="template.html" />
     <link rel="prev" title="Topology-Aware Policy" href="topology-aware.html" /> 
 </head>
 
@@ -64,6 +64,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#metrics-and-debugging">Metrics and Debugging</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="template.html">Template Policy</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../developers-guide/index.html">Developer’s Guide</a></li>
@@ -132,7 +133,8 @@ first decides the type of the balloon that will run the
 container. The decision is based on annotations of the pod, or the
 namespace if annotations are not given.</p></li>
 <li><p>Next the policy decides which balloon of the decided type will run
-the container. Options are:</p>
+the container. Options are:</p></li>
+</ol>
 <ul class="simple">
 <li><p>an existing balloon that already has enough CPUs to run its
 current and new containers</p></li>
@@ -140,7 +142,7 @@ current and new containers</p></li>
 new containers</p></li>
 <li><p>new balloon.</p></li>
 </ul>
-</li>
+<ol class="arabic simple" start="9">
 <li><p>When a CPU is added to a balloon or removed from it, the CPU is
 reconfigured based on balloon’s CPU class attributes, or idle CPU
 class attributes.</p></li>
@@ -160,7 +162,7 @@ more details on managing the configuration.</p>
 <section id="parameters">
 <h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading"></a></h3>
 <p>Balloons policy parameters:</p>
-<ul class="simple">
+<ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">PinCPU</span></code> controls pinning a container to CPUs of its balloon. The
 default is <code class="docutils literal notranslate"><span class="pre">true</span></code>: the container cannot use other CPUs.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">PinMemory</span></code> controls pinning a container to the memories that are
@@ -217,6 +219,8 @@ have at least this many CPUs, even if containers in the balloon
 request less.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">CpuClass</span></code> specifies the name of the CPU class according to which
 CPUs of balloons are configured.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PreferCloseToDevices</span></code>: prefer creating new balloons close to
+listed devices. List of strings</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">PreferSpreadingPods</span></code>: if <code class="docutils literal notranslate"><span class="pre">true</span></code>, containers of the same pod
 should be spread to different balloons of this type. The default
 is <code class="docutils literal notranslate"><span class="pre">false</span></code>: prefer placing containers of the same pod to the same
@@ -236,7 +240,7 @@ change, idle CPUs (that do not belong to any balloon) are reshared
 as extra CPUs to workloads in balloons with this option. The value
 sets locality of allowed extra CPUs that will be common to these
 workloads.</p>
-<ul>
+<ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">system</span></code>: workloads are allowed to use idle CPUs available
 anywhere in the system.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">package</span></code>: …allowed to use idle CPUs in the same package(s)
@@ -249,6 +253,19 @@ the balloon.</p></li>
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">PreferSpreadOnPhysicalCores</span></code> overrides the policy level option
 with the same name in the scope of this balloon type.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PreferCloseToDevices</span></code> prefers creating new balloons close to
+listed devices. If all preferences cannot be fulfilled, preference
+to first devices in the list override preferences to devices after
+them. Adding this preference to any balloon type automatically
+adds corresponding anti-affinity to other balloon types that do
+not prefer to be close to the same device: they prefer being
+created away from the device. Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PreferCloseToDevices</span><span class="p">:</span>
+  <span class="o">-</span> <span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">class</span><span class="o">/</span><span class="n">net</span><span class="o">/</span><span class="n">eth0</span>
+  <span class="o">-</span> <span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">class</span><span class="o">/</span><span class="n">block</span><span class="o">/</span><span class="n">sda</span>
+</pre></div>
+</div>
+</li>
 <li><p><code class="docutils literal notranslate"><span class="pre">AllocatorPriority</span></code> (0: High, 1: Normal, 2: Low, 3: None). CPU
 allocator parameter, used when creating new or resizing existing
 balloons. If there are balloon types with pre-created balloons
@@ -269,9 +286,7 @@ special <code class="docutils literal notranslate"><span class="pre">reserved</s
 <section id="example">
 <h3>Example<a class="headerlink" href="#example" title="Permalink to this heading"></a></h3>
 <p>Example configuration that runs all pods in balloons of 1-4 CPUs.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">policy</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">Active</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">balloons</span>
-<span class="w">  </span><span class="nt">ReservedResources</span><span class="p">:</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">ReservedResources</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">CPU</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
 <span class="w">  </span><span class="nt">balloons</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">PinCPU</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
@@ -299,8 +314,8 @@ special <code class="docutils literal notranslate"><span class="pre">reserved</s
 <span class="w">      </span><span class="nt">uncoreMaxFreq</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2400</span>
 </pre></div>
 </div>
-<p>See the <a class="reference download internal" download="" href="../../../_downloads/03f2c5ae735a2d835f9815d87f3d9404/balloons-policy.cfg"><span class="xref download myst">sample configmap</span></a> for a
-complete example.</p>
+<p>See the <a class="reference download internal" download="" href="../../../_downloads/b8f809b362c39dfb9dc81a90261f6197/balloons-config.yaml"><span class="xref download myst">sample configuration custom resource</span></a> for a
+more complete example.</p>
 </section>
 </section>
 <section id="assigning-a-container-to-a-balloon">
@@ -345,7 +360,7 @@ nri-resource-policy global config:</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="topology-aware.html" class="btn btn-neutral float-left" title="Topology-Aware Policy" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../developers-guide/index.html" class="btn btn-neutral float-right" title="Developer’s Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="template.html" class="btn btn-neutral float-right" title="Template Policy" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
