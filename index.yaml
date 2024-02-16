@@ -13,7 +13,7 @@ entries:
     - https://github.com/containers/nri-plugins
     type: application
     urls:
-    - oci://ghcr.io/klihub/nri-plugins/nri-memory-qos:0.3.2-unstable
+    - oci://ghcr.io/klihub/nri-plugins/nri-memory-qos
     version: 0.3.2-unstable
   nri-memtierd:
   - apiVersion: v2
