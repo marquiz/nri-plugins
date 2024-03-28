@@ -70,7 +70,7 @@ jobs:
           # For unstable chart verison we use:
           #   - chart version: x.y-unstable derived from the latest tag x.y.z
           #   - image version: 'unstable'.
-          majmin="$(git describe | sed -E 's/(v[0-9]*\.[0-9]*).*$/\1/')"
+          majmin="$(git describe --tags | sed -E 's/(v[0-9]*\.[0-9]*).*$/\1/')"
           CHART_VERSION="${majmin}-unstable"
           if [  $GITHUB_REF_NAME = "main" ]; then
               APP_VERSION=unstable
