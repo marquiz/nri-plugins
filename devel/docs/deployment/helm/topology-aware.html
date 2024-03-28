@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Topology-Aware Policy Plugin &mdash; NRI Plugins v0.3.1-68-g9c7ab65 documentation</title>
+  <title>Topology-Aware Policy Plugin &mdash; NRI Plugins v0.4.0-37-g3691621 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -53,18 +53,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../../memory/index.html">Memory plugins</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Deployment</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">Helm</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="balloons.html">Balloons Policy Plugin</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Topology-Aware Policy Plugin</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#installing-the-chart">Installing the Chart</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#uninstalling-the-chart">Uninstalling the Chart</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#configuration-options">Configuration options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#stable-helm-charts">Stable Helm Charts</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html#unstable-helm-charts">Unstable Helm Charts</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="index.html#discovering-unstable-helm-charts">Discovering Unstable Helm Charts</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="index.html#using-unstable-helm-charts">Using Unstable Helm Charts</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="template.html">Template Policy Plugin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="memory-qos.html">Memory-QoS Plugin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="memtierd.html">Memtierd Plugin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sgx-epc.html">SGX EPC Limit Plugin</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../operator/index.html">Operator</a></li>
@@ -220,51 +214,55 @@ customize with their own values, along with the default values.</p>
 <td><p>512Mi</p></td>
 <td><p>memory qouta for the Pod</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">hostPort</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">extraEnv</span></code></p></td>
+<td><p>{}</p></td>
+<td><p>extra environment variables to inject (string map)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">hostPort</span></code></p></td>
 <td><p>8891</p></td>
 <td><p>metrics port to expose on the host</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">config</span></code></p></td>
-<td><p>see <a class="reference external" href="https://github.com/klihub/nri-plugins/tree/9c7ab65cf3739e0c1cb4695928b2b13fd273728e/deployment/helm/topology-aware/values.yaml">helm chart values</a> for the default configuration</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">config</span></code></p></td>
+<td><p>see <a class="reference external" href="https://github.com/marquiz/nri-plugins/tree/36916218f2c53dcd53e106d36199f7353fcf6fcb/deployment/helm/topology-aware/values.yaml">helm chart values</a> for the default configuration</p></td>
 <td><p>plugin configuration data</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">configGroupLabel</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">configGroupLabel</span></code></p></td>
 <td><p>config.nri/group</p></td>
 <td><p>node label for grouping configuration</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">nri.patchRuntimeConfig</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">nri.patchRuntimeConfig</span></code></p></td>
 <td><p>false</p></td>
 <td><p>enable NRI in containerd or CRI-O</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">nri.pluginIndex</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">nri.pluginIndex</span></code></p></td>
 <td><p>90</p></td>
 <td><p>NRI plugin index to register with</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">initImage.name</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">initImage.name</span></code></p></td>
 <td><p><a class="reference external" href="https://ghcr.io/containers/nri-plugins/config-manager">ghcr.io/containers/nri-plugins/config-manager</a></p></td>
 <td><p>init container image name</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">initImage.tag</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">initImage.tag</span></code></p></td>
 <td><p>unstable</p></td>
 <td><p>init container image tag</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">initImage.pullPolicy</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">initImage.pullPolicy</span></code></p></td>
 <td><p>Always</p></td>
 <td><p>init container image pull policy</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tolerations</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tolerations</span></code></p></td>
 <td><p>[]</p></td>
 <td><p>specify taint toleration key, operator and effect</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">affinity</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">affinity</span></code></p></td>
 <td><p>[]</p></td>
 <td><p>specify node affinity</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">nodeSelector</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">nodeSelector</span></code></p></td>
 <td><p>[]</p></td>
 <td><p>specify node selector labels</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">podPriorityClassNodeCritical</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">podPriorityClassNodeCritical</span></code></p></td>
 <td><p>false</p></td>
 <td><p>enable <a class="reference external" href="https://kubernetes.io/docs/tasks/administer-cluster/guaranteed-scheduling-critical-addon-pods/#marking-pod-as-critical">marking Pod as node critical</a></p></td>
 </tr>
